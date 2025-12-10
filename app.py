@@ -10,9 +10,8 @@ from config import Config
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# Generate a random secret key if not set
-if app.config['SECRET_KEY'] == 'mysecret':
-    app.config['SECRET_KEY'] = secrets.token_hex(32)
+# 設定固定的 SECRET_KEY（生產環境應使用環境變數）
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'furhub-secret-key-2024-pet-marketplace')
 
 db = SQLAlchemy(app)
 
