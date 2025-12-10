@@ -31,8 +31,10 @@
 
     .hero-eyebrow {
         font-family: var(--font-accent);
-        font-size: 0.875rem;
-        letter-spacing: 0.3em;
+        font-size: 0.9rem;
+        font-weight: 600;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
         color: var(--color-gold);
         margin-bottom: 1rem;
         display: flex;
@@ -50,23 +52,28 @@
     .hero-title {
         font-family: var(--font-display);
         font-size: clamp(3rem, 7vw, 5.5rem);
-        font-weight: 400;
-        line-height: 1.05;
+        font-weight: 500;
+        line-height: 1.1;
         margin-bottom: 1.5rem;
         max-width: 800px;
+        letter-spacing: -0.01em;
     }
 
     .hero-title .highlight {
         font-style: italic;
+        font-weight: 600;
         color: var(--color-gold-dark);
     }
 
     .hero-subtitle {
+        font-family: var(--font-body);
         font-size: 1.125rem;
+        font-weight: 400;
         color: var(--color-gray);
         max-width: 500px;
         margin-bottom: 2.5rem;
-        line-height: 1.8;
+        line-height: 1.9;
+        letter-spacing: 0.02em;
     }
 
     .hero-stats {
