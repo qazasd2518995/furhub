@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+{% block title %}登入 | FurHub 毛孩樞紐{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-page {
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 2rem;
+        position: relative;
+    }
+
+    .auth-page::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(201, 169, 98, 0.1) 0%, transparent 70%);
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+    }
+
+    .auth-card {
+        background: var(--color-white);
+        border-radius: 8px;
+        box-shadow: var(--shadow-lg);
+        max-width: 450px;
+        width: 100%;
+        overflow: hidden;
+        position: relative;
+        z-index: 1;
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .auth-header {
+        background: var(--color-black);
+        color: var(--color-cream);
+        padding: 2.5rem 2rem;
+        text-align: center;
+    }
+
+    .auth-logo {
+        font-family: var(--font-accent);
+        font-size: 1.5rem;
+        letter-spacing: 0.15em;
+        color: var(--color-gold);
+        margin-bottom: 0.5rem;
+    }
+
+    .auth-title {
+        font-family: var(--font-display);
+        font-size: 1.75rem;
+        font-weight: 400;
+        margin-bottom: 0.5rem;
+    }
+
+    .auth-subtitle {
+        font-size: 0.9rem;
+        color: var(--color-gray-light);
+    }
+
+    .auth-body {
+        padding: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--color-charcoal);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 1px solid rgba(26, 26, 26, 0.12);
+        border-radius: 4px;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        background: var(--color-cream);
+        transition: var(--transition-fast);
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--color-gold);
+        box-shadow: 0 0 0 3px rgba(201, 169, 98, 0.15);
+        background: var(--color-white);
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 1rem 2rem;
+        background: var(--color-black);
+        color: var(--color-cream);
+        border: none;
+        font-family: var(--font-body);
+        font-size: 0.9rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+        margin-top: 0.5rem;
+    }
+
+    .submit-btn:hover {
+        background: var(--color-gold);
+        color: var(--color-black);
+    }
+
+    .auth-footer {
+        text-align: center;
+        padding: 1.5rem 2rem;
+        background: var(--color-cream);
+        border-top: 1px solid rgba(26, 26, 26, 0.06);
+    }
+
+    .auth-footer p {
+        font-size: 0.9rem;
+        color: var(--color-gray);
+    }
+
+    .auth-footer a {
+        color: var(--color-gold);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .auth-footer a:hover {
+        text-decoration: underline;
+    }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        margin: 1.5rem 0;
+        color: var(--color-gray-light);
+        font-size: 0.85rem;
+    }
+
+    .divider::before,
+    .divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: rgba(26, 26, 26, 0.1);
+    }
+
+    .divider span {
+        padding: 0 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="auth-page">
+    <div class="auth-card">
+        <div class="auth-header">
+            <p class="auth-logo">FurHub 毛孩樞紐</p>
+            <h1 class="auth-title">歡迎回來</h1>
+            <p class="auth-subtitle">登入您的帳戶以繼續</p>
+        </div>
+
+        <form method="POST" class="auth-body">
+            <div class="form-group">
+                <label class="form-label">使用者名稱</label>
+                <input type="text" name="username" class="form-input" placeholder="請輸入使用者名稱" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">密碼</label>
+                <input type="password" name="password" class="form-input" placeholder="請輸入密碼" required>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                <i class="fas fa-sign-in-alt"></i>
+                登入
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>還沒有帳戶？<a href="/register">立即註冊</a></p>
+        </div>
+    </div>
+</section>
+{% endblock %}

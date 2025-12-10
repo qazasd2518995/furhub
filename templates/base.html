@@ -1,22 +1,703 @@
 <!doctype html>
-<html lang="zh">
+<html lang="zh-TW">
 <head>
     <meta charset="utf-8">
-    <title>商品管理系統</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}FurHub 毛孩樞紐 | 寵物用品專賣{% endblock %}</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Bebas+Neue&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --color-cream: #FAF7F2;
+            --color-cream-dark: #F0EBE3;
+            --color-black: #1A1A1A;
+            --color-charcoal: #2D2D2D;
+            --color-gold: #C9A962;
+            --color-gold-light: #E8D5A3;
+            --color-gold-dark: #A68B4B;
+            --color-gray: #6B6B6B;
+            --color-gray-light: #9A9A9A;
+            --color-forest: #2D5A27;
+            --color-burgundy: #8B2635;
+            --color-white: #FFFFFF;
+
+            --font-display: 'Cormorant Garamond', Georgia, serif;
+            --font-accent: 'Bebas Neue', Impact, sans-serif;
+            --font-body: 'Karla', -apple-system, sans-serif;
+
+            --shadow-sm: 0 2px 8px rgba(26, 26, 26, 0.06);
+            --shadow-md: 0 8px 30px rgba(26, 26, 26, 0.1);
+            --shadow-lg: 0 20px 60px rgba(26, 26, 26, 0.15);
+            --shadow-gold: 0 8px 30px rgba(201, 169, 98, 0.3);
+
+            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-smooth: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-bounce: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--color-black);
+            background-color: var(--color-cream);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Grain texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* Selection */
+        ::selection {
+            background-color: var(--color-gold);
+            color: var(--color-black);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--color-cream-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--color-gold);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--color-gold-dark);
+        }
+
+        /* ========================
+           NAVIGATION
+        ======================== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 0;
+            background: rgba(250, 247, 242, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(26, 26, 26, 0.05);
+            transition: var(--transition-smooth);
+        }
+
+        .navbar.scrolled {
+            padding: 0.75rem 0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-family: var(--font-accent);
+            font-size: 2rem;
+            letter-spacing: 0.15em;
+            color: var(--color-black);
+            text-decoration: none;
+            position: relative;
+            transition: var(--transition-fast);
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--color-gold);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform var(--transition-smooth);
+        }
+
+        .logo:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            font-family: var(--font-body);
+            font-size: 0.875rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--color-charcoal);
+            text-decoration: none;
+            position: relative;
+            padding: 0.5rem 0;
+            transition: var(--transition-fast);
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 4px;
+            height: 4px;
+            background: var(--color-gold);
+            border-radius: 50%;
+            transform: translateX(-50%) scale(0);
+            transition: var(--transition-bounce);
+        }
+
+        .nav-link:hover {
+            color: var(--color-black);
+        }
+
+        .nav-link:hover::before {
+            transform: translateX(-50%) scale(1);
+        }
+
+        .btn-nav {
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 0.875rem 1.75rem;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-primary {
+            background: var(--color-black);
+            color: var(--color-cream);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(201, 169, 98, 0.3), transparent);
+            transition: var(--transition-smooth);
+        }
+
+        .btn-primary:hover {
+            background: var(--color-charcoal);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-gold {
+            background: var(--color-gold);
+            color: var(--color-black);
+        }
+
+        .btn-gold:hover {
+            background: var(--color-gold-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--color-black);
+            border: 1px solid var(--color-black);
+        }
+
+        .btn-outline:hover {
+            background: var(--color-black);
+            color: var(--color-cream);
+        }
+
+        /* ========================
+           MAIN CONTENT
+        ======================== */
+        .main-content {
+            padding-top: 100px;
+            min-height: calc(100vh - 100px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .container-narrow {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* ========================
+           TYPOGRAPHY
+        ======================== */
+        .heading-xl {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 400;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        .heading-lg {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        .heading-md {
+            font-family: var(--font-display);
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        .heading-sm {
+            font-family: var(--font-accent);
+            font-size: 1rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .text-gold {
+            color: var(--color-gold);
+        }
+
+        .text-gray {
+            color: var(--color-gray);
+        }
+
+        .text-italic {
+            font-style: italic;
+        }
+
+        /* ========================
+           FOOTER
+        ======================== */
+        .footer {
+            background: var(--color-black);
+            color: var(--color-cream);
+            padding: 4rem 0 2rem;
+            margin-top: 6rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand .logo {
+            color: var(--color-cream);
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .footer-brand p {
+            color: var(--color-gray-light);
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        .footer-title {
+            font-family: var(--font-accent);
+            font-size: 0.875rem;
+            letter-spacing: 0.2em;
+            margin-bottom: 1.5rem;
+            color: var(--color-gold);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links a {
+            color: var(--color-gray-light);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: var(--transition-fast);
+        }
+
+        .footer-links a:hover {
+            color: var(--color-cream);
+            padding-left: 0.5rem;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(250, 247, 242, 0.1);
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--color-gray);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(250, 247, 242, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-cream);
+            text-decoration: none;
+            transition: var(--transition-smooth);
+        }
+
+        .social-links a:hover {
+            background: var(--color-gold);
+            border-color: var(--color-gold);
+            color: var(--color-black);
+            transform: translateY(-3px);
+        }
+
+        /* ========================
+           ANIMATIONS
+        ======================== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        .animate-fade-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .animate-slide-left {
+            animation: slideInLeft 0.6s ease-out forwards;
+        }
+
+        .animate-scale {
+            animation: scaleIn 0.5s ease-out forwards;
+        }
+
+        /* Stagger delays */
+        .delay-1 { animation-delay: 0.1s; opacity: 0; }
+        .delay-2 { animation-delay: 0.2s; opacity: 0; }
+        .delay-3 { animation-delay: 0.3s; opacity: 0; }
+        .delay-4 { animation-delay: 0.4s; opacity: 0; }
+        .delay-5 { animation-delay: 0.5s; opacity: 0; }
+
+        /* ========================
+           UTILITIES
+        ======================== */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        /* ========================
+           RESPONSIVE
+        ======================== */
+        @media (max-width: 1024px) {
+            .footer-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-container {
+                padding: 0 1rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .nav-link {
+                display: none;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* ========================
+           FLASH MESSAGES
+        ======================== */
+        .flash-messages {
+            position: fixed;
+            top: 100px;
+            right: 2rem;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .flash {
+            padding: 1rem 1.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            animation: slideInLeft 0.4s ease-out;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .flash-success {
+            background: var(--color-forest);
+            color: var(--color-cream);
+        }
+
+        .flash-error {
+            background: var(--color-burgundy);
+            color: var(--color-cream);
+        }
+
+        .flash-info {
+            background: var(--color-charcoal);
+            color: var(--color-cream);
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-light">
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="navbar-container">
+            <a href="/" class="logo">FurHub</a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">探索商品</a>
+                {% if session.get('user_id') %}
+                    {% if session.get('is_admin') %}
+                        <a href="/my-items" class="nav-link">商品管理</a>
+                        <a href="/orders" class="nav-link">訂單管理</a>
+                    {% endif %}
+                    <a href="/logout" class="btn-nav btn-outline">登出</a>
+                    {% if session.get('is_admin') %}
+                        <a href="/add" class="btn-nav btn-primary">
+                            <i class="fas fa-plus"></i>
+                            上架商品
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <a href="/login" class="nav-link">登入</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
-    <div class="container">
-        <a class="navbar-brand" href="/">商品平台</a>
-        <a class="btn btn-light" href="/add">上架商品</a>
-    </div>
-</nav>
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}">
+                        {% if category == 'success' %}
+                            <i class="fas fa-check-circle"></i>
+                        {% elif category == 'error' %}
+                            <i class="fas fa-exclamation-circle"></i>
+                        {% else %}
+                            <i class="fas fa-info-circle"></i>
+                        {% endif %}
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
 
-<div class="container">
-    {% block content %}{% endblock %}
-</div>
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
 
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="/" class="logo">FurHub</a>
+                    <p>毛孩樞紐，為您的毛寶貝提供最優質的寵物用品。讓每一個毛孩都能擁有幸福生活。</p>
+                </div>
+                <div class="footer-section">
+                    <h4 class="footer-title">探索</h4>
+                    <ul class="footer-links">
+                        <li><a href="/">所有商品</a></li>
+                        <li><a href="/">寵物食品</a></li>
+                        <li><a href="/">寵物玩具</a></li>
+                        <li><a href="/">寵物用品</a></li>
+                    </ul>
+                </div>
+                {% if session.get('is_admin') %}
+                <div class="footer-section">
+                    <h4 class="footer-title">管理</h4>
+                    <ul class="footer-links">
+                        <li><a href="/add">上架商品</a></li>
+                        <li><a href="/my-items">商品管理</a></li>
+                        <li><a href="/orders">訂單管理</a></li>
+                    </ul>
+                </div>
+                {% endif %}
+                <div class="footer-section">
+                    <h4 class="footer-title">支援</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">常見問題</a></li>
+                        <li><a href="#">聯絡我們</a></li>
+                        <li><a href="#">使用條款</a></li>
+                        <li><a href="#">隱私政策</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 FurHub 毛孩樞紐. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="LINE"><i class="fab fa-line"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navbar scroll effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Auto-hide flash messages
+        setTimeout(() => {
+            document.querySelectorAll('.flash').forEach(flash => {
+                flash.style.animation = 'fadeInUp 0.4s ease-out reverse forwards';
+                setTimeout(() => flash.remove(), 400);
+            });
+        }, 4000);
+    </script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

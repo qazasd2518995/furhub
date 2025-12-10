@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}找不到頁面 | FurHub 毛孩樞紐{% endblock %}
+
+{% block extra_css %}
+<style>
+    .error-page {
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 2rem;
+        text-align: center;
+    }
+
+    .error-content {
+        max-width: 500px;
+    }
+
+    .error-code {
+        font-family: var(--font-accent);
+        font-size: clamp(6rem, 15vw, 10rem);
+        letter-spacing: 0.1em;
+        color: var(--color-cream-dark);
+        line-height: 1;
+        margin-bottom: 1rem;
+    }
+
+    .error-title {
+        font-family: var(--font-display);
+        font-size: clamp(1.5rem, 4vw, 2rem);
+        font-weight: 400;
+        margin-bottom: 1rem;
+    }
+
+    .error-message {
+        color: var(--color-gray);
+        margin-bottom: 2rem;
+        line-height: 1.7;
+    }
+
+    .error-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem 2rem;
+        background: var(--color-black);
+        color: var(--color-cream);
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        transition: var(--transition-smooth);
+    }
+
+    .error-btn:hover {
+        background: var(--color-gold);
+        color: var(--color-black);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="error-page">
+    <div class="error-content">
+        <div class="error-code">404</div>
+        <h1 class="error-title">找不到頁面</h1>
+        <p class="error-message">
+            抱歉，您要找的頁面不存在或已被移除。<br>
+            請確認網址是否正確，或返回首頁繼續瀏覽。
+        </p>
+        <a href="/" class="error-btn">
+            <i class="fas fa-home"></i>
+            返回首頁
+        </a>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+{% block title %}訂單管理 | FurHub 毛孩樞紐{% endblock %}
+
+{% block extra_css %}
+<style>
+    .orders-page {
+        padding: 2rem 0 4rem;
+    }
+
+    .page-header {
+        margin-bottom: 3rem;
+    }
+
+    .page-eyebrow {
+        font-family: var(--font-accent);
+        font-size: 0.875rem;
+        letter-spacing: 0.3em;
+        color: var(--color-gold);
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .page-eyebrow::before {
+        content: '';
+        width: 30px;
+        height: 1px;
+        background: var(--color-gold);
+    }
+
+    .page-title {
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 400;
+        margin-bottom: 0.75rem;
+    }
+
+    .page-subtitle {
+        color: var(--color-gray);
+        font-size: 1rem;
+    }
+
+    /* Orders Table */
+    .orders-table-wrapper {
+        background: var(--color-white);
+        border-radius: 4px;
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+    }
+
+    .orders-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .orders-table th {
+        background: var(--color-black);
+        color: var(--color-cream);
+        padding: 1rem 1.5rem;
+        text-align: left;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
+
+    .orders-table td {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid rgba(26, 26, 26, 0.06);
+        vertical-align: middle;
+    }
+
+    .orders-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .orders-table tr:hover td {
+        background: rgba(201, 169, 98, 0.03);
+    }
+
+    .order-product {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .order-product-image {
+        width: 60px;
+        height: 60px;
+        border-radius: 4px;
+        object-fit: cover;
+    }
+
+    .order-product-info h4 {
+        font-family: var(--font-display);
+        font-size: 1rem;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    .order-product-info p {
+        font-size: 0.8rem;
+        color: var(--color-gray);
+    }
+
+    .order-buyer {
+        font-size: 0.9rem;
+    }
+
+    .order-buyer strong {
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+    .order-buyer span {
+        color: var(--color-gray);
+        font-size: 0.8rem;
+    }
+
+    .order-contact {
+        font-size: 0.85rem;
+        color: var(--color-gray);
+    }
+
+    .order-contact a {
+        color: var(--color-gold);
+        text-decoration: none;
+    }
+
+    .order-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.4rem 0.75rem;
+        background: rgba(45, 90, 39, 0.1);
+        color: var(--color-forest);
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        border-radius: 100px;
+    }
+
+    .order-status i {
+        font-size: 0.5rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 6rem 2rem;
+        background: var(--color-white);
+        border-radius: 4px;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: var(--color-cream-dark);
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-title {
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .empty-text {
+        color: var(--color-gray);
+        margin-bottom: 2rem;
+    }
+
+    .empty-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem 2rem;
+        background: var(--color-gold);
+        color: var(--color-black);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.875rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        transition: var(--transition-smooth);
+    }
+
+    .empty-btn:hover {
+        background: var(--color-gold-dark);
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 1024px) {
+        .orders-table-wrapper {
+            overflow-x: auto;
+        }
+
+        .orders-table {
+            min-width: 800px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="orders-page">
+    <div class="container">
+        <header class="page-header">
+            <p class="page-eyebrow">賣家中心</p>
+            <h1 class="page-title">訂單管理</h1>
+            <p class="page-subtitle">查看與管理您收到的所有訂單</p>
+        </header>
+
+        {% if orders %}
+            <div class="orders-table-wrapper">
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>商品</th>
+                            <th>買家地址</th>
+                            <th>聯絡方式</th>
+                            <th>狀態</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for data in orders %}
+                            <tr>
+                                <td>
+                                    <div class="order-product">
+                                        <img src="/uploads/{{ data.item.image }}" alt="{{ data.item.content }}" class="order-product-image">
+                                        <div class="order-product-info">
+                                            <h4>{{ data.item.content }}</h4>
+                                            <p>NT$ {{ data.item.price }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="order-buyer">
+                                        {{ data.order.buyer_location }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="order-contact">
+                                        <div>{{ data.order.buyer_phone }}</div>
+                                        <a href="mailto:{{ data.order.buyer_email }}">{{ data.order.buyer_email }}</a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="order-status">
+                                        <i class="fas fa-circle"></i>
+                                        待處理
+                                    </span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <h3 class="empty-title">尚無訂單</h3>
+                <p class="empty-text">當有人購買您的商品時，訂單會顯示在這裡</p>
+                <a href="/" class="empty-btn">
+                    <i class="fas fa-home"></i>
+                    返回首頁
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

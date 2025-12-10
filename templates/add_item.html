@@ -1,40 +1,762 @@
 {% extends "base.html" %}
+{% block title %}上架商品 | FurHub 毛孩樞紐{% endblock %}
+
+{% block extra_css %}
+<style>
+    .add-page {
+        padding: 2rem 0 4rem;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .page-eyebrow {
+        font-family: var(--font-accent);
+        font-size: 0.875rem;
+        letter-spacing: 0.3em;
+        color: var(--color-gold);
+        margin-bottom: 0.75rem;
+    }
+
+    .page-title {
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 400;
+        margin-bottom: 0.75rem;
+    }
+
+    .page-subtitle {
+        color: var(--color-gray);
+        font-size: 1rem;
+    }
+
+    /* ========================
+       FORM LAYOUT
+    ======================== */
+    .form-layout {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 3rem;
+        align-items: start;
+    }
+
+    /* ========================
+       FORM CARD
+    ======================== */
+    .form-card {
+        background: var(--color-white);
+        border-radius: 4px;
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+    }
+
+    .form-header {
+        background: var(--color-black);
+        color: var(--color-cream);
+        padding: 1.5rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .form-header-icon {
+        width: 48px;
+        height: 48px;
+        background: rgba(201, 169, 98, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-gold);
+    }
+
+    .form-header-text h2 {
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    .form-header-text p {
+        font-size: 0.85rem;
+        color: var(--color-gray-light);
+    }
+
+    .form-body {
+        padding: 2rem;
+    }
+
+    /* ========================
+       FORM GROUPS
+    ======================== */
+    .form-section {
+        margin-bottom: 2rem;
+    }
+
+    .form-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .form-section-title {
+        font-family: var(--font-accent);
+        font-size: 0.75rem;
+        letter-spacing: 0.2em;
+        color: var(--color-gold);
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid rgba(26, 26, 26, 0.06);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--color-charcoal);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-label .required {
+        color: var(--color-burgundy);
+        margin-left: 0.25rem;
+    }
+
+    .form-hint {
+        font-size: 0.8rem;
+        color: var(--color-gray-light);
+        margin-top: 0.5rem;
+    }
+
+    .form-input,
+    .form-textarea,
+    .form-select {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 1px solid rgba(26, 26, 26, 0.12);
+        border-radius: 4px;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        background: var(--color-cream);
+        transition: var(--transition-fast);
+    }
+
+    .form-input:focus,
+    .form-textarea:focus,
+    .form-select:focus {
+        outline: none;
+        border-color: var(--color-gold);
+        box-shadow: 0 0 0 3px rgba(201, 169, 98, 0.15);
+        background: var(--color-white);
+    }
+
+    .form-input::placeholder,
+    .form-textarea::placeholder {
+        color: var(--color-gray-light);
+    }
+
+    .form-textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .form-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B6B6B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        padding-right: 2.5rem;
+        cursor: pointer;
+    }
+
+    /* ========================
+       FILE UPLOAD
+    ======================== */
+    .file-upload {
+        position: relative;
+    }
+
+    .file-upload-input {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        cursor: pointer;
+        z-index: 2;
+    }
+
+    .file-upload-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2.5rem 2rem;
+        border: 2px dashed rgba(26, 26, 26, 0.15);
+        border-radius: 4px;
+        background: var(--color-cream);
+        transition: var(--transition-smooth);
+        cursor: pointer;
+        text-align: center;
+    }
+
+    .file-upload:hover .file-upload-label,
+    .file-upload-input:focus + .file-upload-label {
+        border-color: var(--color-gold);
+        background: rgba(201, 169, 98, 0.05);
+    }
+
+    .file-upload-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(201, 169, 98, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        color: var(--color-gold);
+        font-size: 1.5rem;
+        transition: var(--transition-smooth);
+    }
+
+    .file-upload:hover .file-upload-icon {
+        transform: scale(1.1);
+        background: rgba(201, 169, 98, 0.2);
+    }
+
+    .file-upload-text {
+        font-weight: 600;
+        color: var(--color-charcoal);
+        margin-bottom: 0.25rem;
+    }
+
+    .file-upload-hint {
+        font-size: 0.8rem;
+        color: var(--color-gray-light);
+    }
+
+    .file-name {
+        margin-top: 1rem;
+        padding: 0.75rem 1rem;
+        background: rgba(45, 90, 39, 0.1);
+        border-radius: 4px;
+        font-size: 0.875rem;
+        color: var(--color-forest);
+        display: none;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .file-name.show {
+        display: flex;
+    }
+
+    /* ========================
+       PRICE INPUT
+    ======================== */
+    .price-input-wrapper {
+        position: relative;
+    }
+
+    .price-prefix {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-weight: 600;
+        color: var(--color-gray);
+    }
+
+    .price-input-wrapper .form-input {
+        padding-left: 3.5rem;
+    }
+
+    /* ========================
+       SUBMIT BUTTON
+    ======================== */
+    .form-footer {
+        padding: 1.5rem 2rem;
+        background: var(--color-cream);
+        border-top: 1px solid rgba(26, 26, 26, 0.06);
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 1.125rem 2rem;
+        background: var(--color-black);
+        color: var(--color-cream);
+        border: none;
+        font-family: var(--font-body);
+        font-size: 0.9rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .submit-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(201, 169, 98, 0.3), transparent);
+        transition: var(--transition-smooth);
+    }
+
+    .submit-btn:hover {
+        background: var(--color-gold);
+        color: var(--color-black);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-gold);
+    }
+
+    .submit-btn:hover::before {
+        left: 100%;
+    }
+
+    /* ========================
+       PREVIEW CARD
+    ======================== */
+    .preview-card {
+        position: sticky;
+        top: 120px;
+    }
+
+    .preview-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .preview-header i {
+        color: var(--color-gold);
+    }
+
+    .preview-header span {
+        font-family: var(--font-accent);
+        font-size: 0.875rem;
+        letter-spacing: 0.15em;
+        color: var(--color-charcoal);
+    }
+
+    .preview-product {
+        background: var(--color-white);
+        border-radius: 4px;
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+        transition: var(--transition-smooth);
+    }
+
+    .preview-image-wrapper {
+        aspect-ratio: 4/5;
+        background: linear-gradient(135deg, var(--color-cream-dark) 0%, var(--color-cream) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .preview-image-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: var(--color-gray-light);
+    }
+
+    .preview-image-placeholder i {
+        font-size: 3rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .preview-image-placeholder span {
+        font-size: 0.85rem;
+    }
+
+    .preview-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none;
+    }
+
+    .preview-image.show {
+        display: block;
+    }
+
+    .preview-content {
+        padding: 1.25rem;
+    }
+
+    .preview-category {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: var(--color-gold);
+        margin-bottom: 0.5rem;
+    }
+
+    .preview-title {
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        font-weight: 500;
+        color: var(--color-black);
+        margin-bottom: 0.5rem;
+        min-height: 1.625rem;
+    }
+
+    .preview-store {
+        font-size: 0.85rem;
+        color: var(--color-gray);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        min-height: 1.275rem;
+    }
+
+    .preview-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(26, 26, 26, 0.06);
+    }
+
+    .preview-price {
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--color-black);
+    }
+
+    .preview-price .currency {
+        font-size: 0.9rem;
+        font-weight: 400;
+    }
+
+    .preview-btn {
+        padding: 0.6rem 1.2rem;
+        background: var(--color-black);
+        color: var(--color-cream);
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        border: none;
+    }
+
+    /* Tips Section */
+    .tips-card {
+        margin-top: 2rem;
+        background: rgba(201, 169, 98, 0.08);
+        border-radius: 4px;
+        padding: 1.5rem;
+        border-left: 3px solid var(--color-gold);
+    }
+
+    .tips-title {
+        font-family: var(--font-accent);
+        font-size: 0.75rem;
+        letter-spacing: 0.15em;
+        color: var(--color-gold-dark);
+        margin-bottom: 1rem;
+    }
+
+    .tips-list {
+        list-style: none;
+    }
+
+    .tips-list li {
+        font-size: 0.85rem;
+        color: var(--color-charcoal);
+        padding-left: 1.25rem;
+        position: relative;
+        margin-bottom: 0.75rem;
+        line-height: 1.5;
+    }
+
+    .tips-list li::before {
+        content: '\f00c';
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        position: absolute;
+        left: 0;
+        color: var(--color-gold);
+        font-size: 0.7rem;
+    }
+
+    .tips-list li:last-child {
+        margin-bottom: 0;
+    }
+
+    /* ========================
+       RESPONSIVE
+    ======================== */
+    @media (max-width: 1024px) {
+        .form-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .preview-card {
+            position: relative;
+            top: 0;
+            order: -1;
+        }
+
+        .preview-product {
+            max-width: 350px;
+            margin: 0 auto;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .form-body {
+            padding: 1.5rem;
+        }
+
+        .form-header {
+            padding: 1.25rem 1.5rem;
+        }
+
+        .form-footer {
+            padding: 1.25rem 1.5rem;
+        }
+    }
+
+    /* Animations */
+    .form-card {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .preview-card {
+        animation: fadeInUp 0.6s ease-out 0.2s forwards;
+        opacity: 0;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
+<section class="add-page">
+    <div class="container">
+        <header class="page-header">
+            <p class="page-eyebrow">管理中心</p>
+            <h1 class="page-title">上架寵物商品</h1>
+            <p class="page-subtitle">填寫商品資訊，讓更多毛孩家長發現好物</p>
+        </header>
 
-<h2 class="mb-4">上架商品</h2>
+        <div class="form-layout">
+            <!-- Form Card -->
+            <div class="form-card">
+                <div class="form-header">
+                    <div class="form-header-icon">
+                        <i class="fas fa-paw"></i>
+                    </div>
+                    <div class="form-header-text">
+                        <h2>寵物商品資訊</h2>
+                        <p>請填寫完整資訊以提高曝光率</p>
+                    </div>
+                </div>
 
-<form method="POST" enctype="multipart/form-data" class="bg-white p-4 rounded shadow">
+                <form method="POST" enctype="multipart/form-data" id="addItemForm">
+                    <div class="form-body">
+                        <!-- Basic Info Section -->
+                        <div class="form-section">
+                            <h3 class="form-section-title">基本資訊</h3>
 
-    <div class="mb-3">
-        <label class="form-label">商品內容</label>
-        <input name="content" class="form-control" required>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    商品名稱 <span class="required">*</span>
+                                </label>
+                                <input type="text" name="content" id="content" class="form-input" placeholder="例如：狗狗訓練零食、貓咪逗貓棒、寵物自動餵食器" required>
+                                <p class="form-hint">清楚描述商品名稱、品牌、規格等資訊</p>
+                            </div>
+                        </div>
+
+                        <!-- Seller Info Section -->
+                        <div class="form-section">
+                            <h3 class="form-section-title">賣家資訊</h3>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    店家/賣家名稱 <span class="required">*</span>
+                                </label>
+                                <input type="text" name="store" id="store" class="form-input" placeholder="您的店家名稱或暱稱" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    售價 <span class="required">*</span>
+                                </label>
+                                <div class="price-input-wrapper">
+                                    <span class="price-prefix">NT$</span>
+                                    <input type="text" name="price" id="price" class="form-input" placeholder="0" required>
+                                </div>
+                                <p class="form-hint">請輸入整數金額，例如：15000</p>
+                            </div>
+                        </div>
+
+                        <!-- Image Section -->
+                        <div class="form-section">
+                            <h3 class="form-section-title">商品圖片</h3>
+
+                            <div class="form-group">
+                                <div class="file-upload">
+                                    <input type="file" name="image" id="image" class="file-upload-input" accept="image/*" required>
+                                    <label class="file-upload-label" for="image">
+                                        <div class="file-upload-icon">
+                                            <i class="fas fa-cloud-upload-alt"></i>
+                                        </div>
+                                        <span class="file-upload-text">點擊或拖曳上傳圖片</span>
+                                        <span class="file-upload-hint">支援 JPG、PNG、GIF，建議尺寸 800x1000px</span>
+                                    </label>
+                                </div>
+                                <div class="file-name" id="fileName">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span id="fileNameText"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-footer">
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-check"></i>
+                            確認上架
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Preview Card -->
+            <div class="preview-card">
+                <div class="preview-header">
+                    <i class="fas fa-eye"></i>
+                    <span>即時預覽</span>
+                </div>
+
+                <article class="preview-product">
+                    <div class="preview-image-wrapper">
+                        <div class="preview-image-placeholder" id="previewPlaceholder">
+                            <i class="far fa-image"></i>
+                            <span>上傳圖片後預覽</span>
+                        </div>
+                        <img src="" alt="Preview" class="preview-image" id="previewImage">
+                    </div>
+                    <div class="preview-content">
+                        <p class="preview-category">寵物用品</p>
+                        <h3 class="preview-title" id="previewTitle">商品名稱</h3>
+                        <p class="preview-store" id="previewStore">
+                            <i class="fas fa-store"></i>
+                            <span>賣家名稱</span>
+                        </p>
+                        <div class="preview-footer">
+                            <p class="preview-price">
+                                <span class="currency">NT$</span>
+                                <span id="previewPrice">0</span>
+                            </p>
+                            <button class="preview-btn" disabled>查看詳情</button>
+                        </div>
+                    </div>
+                </article>
+
+                <div class="tips-card">
+                    <h4 class="tips-title">上架小技巧</h4>
+                    <ul class="tips-list">
+                        <li>使用清晰、高品質的商品照片</li>
+                        <li>詳細描述商品規格與適用寵物</li>
+                        <li>設定合理的價格吸引毛孩家長</li>
+                        <li>標註品牌與材質增加信任度</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
+</section>
+{% endblock %}
 
-    <div class="mb-3">
-        <label class="form-label">店家</label>
-        <input name="store" class="form-control" required>
-    </div>
+{% block extra_js %}
+<script>
+    // Live Preview Updates
+    const contentInput = document.getElementById('content');
+    const storeInput = document.getElementById('store');
+    const priceInput = document.getElementById('price');
+    const imageInput = document.getElementById('image');
 
-    <div class="mb-3">
-        <label class="form-label">價格</label>
-        <input name="price" class="form-control" required>
-    </div>
+    const previewTitle = document.getElementById('previewTitle');
+    const previewStore = document.getElementById('previewStore');
+    const previewPrice = document.getElementById('previewPrice');
+    const previewImage = document.getElementById('previewImage');
+    const previewPlaceholder = document.getElementById('previewPlaceholder');
+    const fileName = document.getElementById('fileName');
+    const fileNameText = document.getElementById('fileNameText');
 
-    <div class="mb-3">
-        <label class="form-label">分類</label>
-        <select name="category" class="form-control" required>
-            {% for c in categories %}
-            <option value="{{ c }}">{{ c }}</option>
-            {% endfor %}
-        </select>
-    </div>
+    // Update title
+    contentInput.addEventListener('input', function() {
+        previewTitle.textContent = this.value || '商品名稱';
+    });
 
-    <div class="mb-3">
-        <label class="form-label">圖片</label>
-        <input type="file" name="image" class="form-control" required>
-    </div>
+    // Update store
+    storeInput.addEventListener('input', function() {
+        previewStore.querySelector('span').textContent = this.value || '賣家名稱';
+    });
 
-    <button class="btn btn-primary w-100">確認上架</button>
-</form>
+    // Update price with formatting
+    priceInput.addEventListener('input', function() {
+        // Remove non-numeric characters
+        let value = this.value.replace(/[^\d]/g, '');
+        this.value = value;
 
+        // Format with commas for display
+        const formatted = value ? parseInt(value).toLocaleString() : '0';
+        previewPrice.textContent = formatted;
+    });
+
+    // Image preview
+    imageInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const file = this.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                previewImage.classList.add('show');
+                previewPlaceholder.style.display = 'none';
+            };
+
+            reader.readAsDataURL(file);
+
+            // Show file name
+            fileNameText.textContent = file.name;
+            fileName.classList.add('show');
+        }
+    });
+
+    // Form validation enhancement
+    document.getElementById('addItemForm').addEventListener('submit', function(e) {
+        const submitBtn = this.querySelector('.submit-btn');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 上架中...';
+        submitBtn.disabled = true;
+    });
+</script>
 {% endblock %}

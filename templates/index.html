@@ -1,41 +1,906 @@
 {% extends "base.html" %}
+{% block title %}FurHub 毛孩樞紐 | 寵物用品專賣{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ========================
+       HERO SECTION
+    ======================== */
+    .hero {
+        position: relative;
+        padding: 4rem 0 6rem;
+        overflow: hidden;
+    }
+
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(201, 169, 98, 0.15) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-eyebrow {
+        font-family: var(--font-accent);
+        font-size: 0.875rem;
+        letter-spacing: 0.3em;
+        color: var(--color-gold);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .hero-eyebrow::before {
+        content: '';
+        width: 40px;
+        height: 1px;
+        background: var(--color-gold);
+    }
+
+    .hero-title {
+        font-family: var(--font-display);
+        font-size: clamp(3rem, 7vw, 5.5rem);
+        font-weight: 400;
+        line-height: 1.05;
+        margin-bottom: 1.5rem;
+        max-width: 800px;
+    }
+
+    .hero-title .highlight {
+        font-style: italic;
+        color: var(--color-gold-dark);
+    }
+
+    .hero-subtitle {
+        font-size: 1.125rem;
+        color: var(--color-gray);
+        max-width: 500px;
+        margin-bottom: 2.5rem;
+        line-height: 1.8;
+    }
+
+    .hero-stats {
+        display: flex;
+        gap: 3rem;
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(26, 26, 26, 0.1);
+    }
+
+    .stat {
+        text-align: left;
+    }
+
+    .stat-number {
+        font-family: var(--font-display);
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: var(--color-black);
+        line-height: 1;
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--color-gray);
+        margin-top: 0.5rem;
+    }
+
+    /* ========================
+       SEARCH SECTION
+    ======================== */
+    .search-section {
+        padding: 2rem 0;
+        position: relative;
+    }
+
+    .search-container {
+        background: var(--color-white);
+        border-radius: 2px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow-md);
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .search-input-wrapper {
+        flex: 2;
+        min-width: 250px;
+        position: relative;
+    }
+
+    .search-input-wrapper i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--color-gray-light);
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 1rem 1rem 1rem 3rem;
+        border: 1px solid rgba(26, 26, 26, 0.1);
+        border-radius: 2px;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        background: var(--color-cream);
+        transition: var(--transition-fast);
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--color-gold);
+        box-shadow: 0 0 0 3px rgba(201, 169, 98, 0.1);
+    }
+
+    .search-input::placeholder {
+        color: var(--color-gray-light);
+    }
+
+    .search-select-wrapper {
+        flex: 1;
+        min-width: 200px;
+        position: relative;
+    }
+
+    .search-select {
+        width: 100%;
+        padding: 1rem 2.5rem 1rem 1rem;
+        border: 1px solid rgba(26, 26, 26, 0.1);
+        border-radius: 2px;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        background: var(--color-cream);
+        appearance: none;
+        cursor: pointer;
+        transition: var(--transition-fast);
+    }
+
+    .search-select:focus {
+        outline: none;
+        border-color: var(--color-gold);
+    }
+
+    .search-select-wrapper::after {
+        content: '\f107';
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--color-gray);
+        pointer-events: none;
+    }
+
+    .search-btn {
+        padding: 1rem 2rem;
+        background: var(--color-black);
+        color: var(--color-cream);
+        border: none;
+        font-family: var(--font-body);
+        font-size: 0.875rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .search-btn:hover {
+        background: var(--color-gold);
+        color: var(--color-black);
+    }
+
+    /* ========================
+       CATEGORIES
+    ======================== */
+    .categories-section {
+        padding: 3rem 0;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 2rem;
+    }
+
+    .section-title {
+        font-family: var(--font-display);
+        font-size: 1.75rem;
+        font-weight: 500;
+    }
+
+    .section-link {
+        font-size: 0.875rem;
+        color: var(--color-gray);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: var(--transition-fast);
+    }
+
+    .section-link:hover {
+        color: var(--color-gold);
+    }
+
+    .categories-grid {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .category-pill {
+        padding: 0.75rem 1.25rem;
+        background: var(--color-white);
+        border: 1px solid rgba(26, 26, 26, 0.08);
+        border-radius: 100px;
+        font-size: 0.875rem;
+        color: var(--color-charcoal);
+        text-decoration: none;
+        transition: var(--transition-smooth);
+        white-space: nowrap;
+    }
+
+    .category-pill:hover,
+    .category-pill.active {
+        background: var(--color-black);
+        color: var(--color-cream);
+        border-color: var(--color-black);
+        transform: translateY(-2px);
+    }
+
+    .category-pill i {
+        margin-right: 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    /* ========================
+       PRODUCTS GRID
+    ======================== */
+    .products-section {
+        padding: 3rem 0;
+    }
+
+    .products-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .products-count {
+        font-size: 0.9rem;
+        color: var(--color-gray);
+    }
+
+    .products-count span {
+        font-weight: 600;
+        color: var(--color-black);
+    }
+
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    /* Masonry-like varied heights */
+    .products-grid.masonry {
+        grid-template-columns: repeat(3, 1fr);
+        grid-auto-rows: 10px;
+    }
+
+    .product-card {
+        background: var(--color-white);
+        border-radius: 4px;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition-smooth);
+        position: relative;
+        animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    .product-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .product-image-wrapper {
+        position: relative;
+        overflow: hidden;
+        aspect-ratio: 4/5;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s ease;
+    }
+
+    .product-card:hover .product-image {
+        transform: scale(1.08);
+    }
+
+    .product-badge {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        padding: 0.4rem 0.75rem;
+        background: var(--color-black);
+        color: var(--color-cream);
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
+
+    .product-actions {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        opacity: 0;
+        transform: translateX(10px);
+        transition: var(--transition-smooth);
+    }
+
+    .product-card:hover .product-actions {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .product-action-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--color-white);
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition-fast);
+    }
+
+    .product-action-btn:hover {
+        background: var(--color-gold);
+        color: var(--color-black);
+    }
+
+    .product-content {
+        padding: 1.25rem;
+    }
+
+    .product-category {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: var(--color-gold);
+        margin-bottom: 0.5rem;
+    }
+
+    .product-title {
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        font-weight: 500;
+        color: var(--color-black);
+        margin-bottom: 0.5rem;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .product-store {
+        font-size: 0.85rem;
+        color: var(--color-gray);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .product-store i {
+        font-size: 0.75rem;
+    }
+
+    .product-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(26, 26, 26, 0.06);
+    }
+
+    .product-price {
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--color-black);
+    }
+
+    .product-price .currency {
+        font-size: 0.9rem;
+        font-weight: 400;
+    }
+
+    .product-view-btn {
+        padding: 0.6rem 1.2rem;
+        background: transparent;
+        border: 1px solid var(--color-black);
+        color: var(--color-black);
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: var(--transition-fast);
+    }
+
+    .product-view-btn:hover {
+        background: var(--color-black);
+        color: var(--color-cream);
+    }
+
+    /* Delete button */
+    .product-delete-btn {
+        position: absolute;
+        bottom: 1rem;
+        right: 1rem;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(139, 38, 53, 0.9);
+        border: none;
+        color: var(--color-cream);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0;
+        transition: var(--transition-smooth);
+        z-index: 10;
+    }
+
+    .product-card:hover .product-delete-btn {
+        opacity: 1;
+    }
+
+    .product-delete-btn:hover {
+        background: var(--color-burgundy);
+        transform: scale(1.1);
+    }
+
+    /* ========================
+       EMPTY STATE
+    ======================== */
+    .empty-state {
+        text-align: center;
+        padding: 6rem 2rem;
+        background: var(--color-white);
+        border-radius: 4px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: var(--color-cream-dark);
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-title {
+        font-family: var(--font-display);
+        font-size: 1.75rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .empty-text {
+        color: var(--color-gray);
+        margin-bottom: 2rem;
+    }
+
+    .empty-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem 2rem;
+        background: var(--color-gold);
+        color: var(--color-black);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.875rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        transition: var(--transition-smooth);
+    }
+
+    .empty-btn:hover {
+        background: var(--color-gold-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-gold);
+    }
+
+    /* ========================
+       DELETE MODAL
+    ======================== */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(26, 26, 26, 0.7);
+        backdrop-filter: blur(4px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.active {
+        display: flex;
+        opacity: 1;
+    }
+
+    .modal-content {
+        background: var(--color-white);
+        padding: 2.5rem;
+        border-radius: 4px;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+    }
+
+    .modal-overlay.active .modal-content {
+        transform: scale(1);
+    }
+
+    .modal-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(139, 38, 53, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        color: var(--color-burgundy);
+        font-size: 1.5rem;
+    }
+
+    .modal-title {
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .modal-text {
+        color: var(--color-gray);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .modal-btn {
+        flex: 1;
+        padding: 1rem;
+        border: none;
+        font-family: var(--font-body);
+        font-size: 0.875rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: var(--transition-fast);
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+
+    .modal-btn-cancel {
+        background: var(--color-cream);
+        color: var(--color-black);
+    }
+
+    .modal-btn-cancel:hover {
+        background: var(--color-cream-dark);
+    }
+
+    .modal-btn-delete {
+        background: var(--color-burgundy);
+        color: var(--color-cream);
+    }
+
+    .modal-btn-delete:hover {
+        background: #6D1F2A;
+    }
+
+    /* ========================
+       RESPONSIVE
+    ======================== */
+    @media (max-width: 1024px) {
+        .products-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .hero-stats {
+            gap: 2rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero {
+            padding: 2rem 0 4rem;
+        }
+
+        .search-container {
+            flex-direction: column;
+        }
+
+        .search-input-wrapper,
+        .search-select-wrapper {
+            width: 100%;
+        }
+
+        .search-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .products-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hero-stats {
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .stat {
+            min-width: 45%;
+        }
+
+        .categories-grid {
+            overflow-x: auto;
+            flex-wrap: nowrap;
+            padding-bottom: 0.5rem;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .section-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+    }
+
+    /* Animation delays for stagger effect */
+    .product-card:nth-child(1) { animation-delay: 0.05s; }
+    .product-card:nth-child(2) { animation-delay: 0.1s; }
+    .product-card:nth-child(3) { animation-delay: 0.15s; }
+    .product-card:nth-child(4) { animation-delay: 0.2s; }
+    .product-card:nth-child(5) { animation-delay: 0.25s; }
+    .product-card:nth-child(6) { animation-delay: 0.3s; }
+    .product-card:nth-child(7) { animation-delay: 0.35s; }
+    .product-card:nth-child(8) { animation-delay: 0.4s; }
+    .product-card:nth-child(9) { animation-delay: 0.45s; }
+</style>
+{% endblock %}
+
 {% block content %}
-
-<h2 class="mb-3">商品列表</h2>
-
-<form method="GET" class="row g-2 mb-3">
-    <div class="col-md-4">
-        <input name="q" class="form-control" placeholder="搜尋商品內容…">
-    </div>
-    <div class="col-md-4">
-        <select name="category" class="form-control">
-            <option value="">全部分類</option>
-            {% for c in categories %}
-            <option value="{{ c }}">{{ c }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="col-md-2">
-        <button class="btn btn-primary w-100">搜尋</button>
-    </div>
-</form>
-
-<div class="row">
-    {% for item in items %}
-    <div class="col-md-4 mb-3">
-        <div class="card h-100">
-            <img src="/uploads/{{ item.image }}" class="card-img-top" style="height:250px; object-fit:cover;">
-            <div class="card-body">
-                <h5 class="card-title">{{ item.content }}</h5>
-                <p class="card-text text-muted">{{ item.category }}</p>
-                <p class="card-text">店家：{{ item.store }}</p>
-                <p class="card-text fw-bold">價格：{{ item.price }}</p>
-                <a href="/item/{{ item.id }}" class="btn btn-primary w-100">查看商品</a>
-                <a href="/delete/{{ item.id }}" class="btn btn-danger w-100 mt-2">刪除商品</a>
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <p class="hero-eyebrow animate-fade-up delay-1">寵物用品專賣</p>
+            <h1 class="hero-title animate-fade-up delay-2">
+                給毛孩最好的<br>
+                <span class="highlight">幸福生活</span>
+            </h1>
+            <p class="hero-subtitle animate-fade-up delay-3">
+                毛孩樞紐，為您的毛寶貝提供最優質的寵物用品。
+                從食品、玩具到生活用品，一站式滿足所有需求。
+            </p>
+            <div class="hero-stats animate-fade-up delay-4">
+                <div class="stat">
+                    <div class="stat-number">{{ items|length }}+</div>
+                    <div class="stat-label">寵物商品</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">品質保證</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">24H</div>
+                    <div class="stat-label">快速出貨</div>
+                </div>
             </div>
         </div>
     </div>
-    {% endfor %}
-</div>
+</section>
 
+<!-- Search Section -->
+<section class="search-section">
+    <div class="container">
+        <form method="GET" class="search-container">
+            <div class="search-input-wrapper" style="flex: 3;">
+                <i class="fas fa-search"></i>
+                <input type="text" name="q" class="search-input" placeholder="搜尋寵物用品..." value="{{ request.args.get('q', '') }}">
+            </div>
+            <button type="submit" class="search-btn">
+                <i class="fas fa-paw"></i>
+                搜尋
+            </button>
+        </form>
+    </div>
+</section>
+
+<!-- Products Section -->
+<section class="products-section">
+    <div class="container">
+        <div class="products-header">
+            <h2 class="section-title">
+                {% if request.args.get('q') %}
+                    搜尋「{{ request.args.get('q') }}」的結果
+                {% else %}
+                    最新寵物用品
+                {% endif %}
+            </h2>
+            <p class="products-count">
+                共 <span>{{ items|length }}</span> 件商品
+            </p>
+        </div>
+
+        {% if items %}
+            <div class="products-grid">
+                {% for item in items %}
+                    <article class="product-card" style="opacity: 0;">
+                        <div class="product-image-wrapper">
+                            <img src="/uploads/{{ item.image }}" alt="{{ item.content }}" class="product-image">
+                            {% if loop.index <= 3 %}
+                                <span class="product-badge">NEW</span>
+                            {% endif %}
+                            <div class="product-actions">
+                                <button class="product-action-btn" title="加入收藏">
+                                    <i class="far fa-heart"></i>
+                                </button>
+                                <button class="product-action-btn" title="分享">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="product-content">
+                            <p class="product-category">{{ item.category }}</p>
+                            <h3 class="product-title">{{ item.content }}</h3>
+                            <p class="product-store">
+                                <i class="fas fa-store"></i>
+                                {{ item.store }}
+                            </p>
+                            <div class="product-footer">
+                                <p class="product-price">
+                                    <span class="currency">NT$</span> {{ item.price }}
+                                </p>
+                                <a href="/item/{{ item.id }}" class="product-view-btn">查看詳情</a>
+                            </div>
+                        </div>
+                        {% if session.get('is_admin') %}
+                        <button class="product-delete-btn" onclick="openDeleteModal({{ item.id }}, '{{ item.content }}')" title="刪除商品">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        {% endif %}
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-paw"></i>
+                </div>
+                <h3 class="empty-title">尚無寵物商品</h3>
+                <p class="empty-text">
+                    {% if request.args.get('q') %}
+                        找不到符合條件的寵物用品，試試其他關鍵字？
+                    {% else %}
+                        目前還沒有寵物用品上架，敬請期待！
+                    {% endif %}
+                </p>
+                {% if session.get('is_admin') %}
+                <a href="/add" class="empty-btn">
+                    <i class="fas fa-plus"></i>
+                    上架商品
+                </a>
+                {% else %}
+                <a href="/" class="empty-btn">
+                    <i class="fas fa-home"></i>
+                    返回首頁
+                </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal-overlay" id="deleteModal">
+    <div class="modal-content">
+        <div class="modal-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h3 class="modal-title">確認刪除</h3>
+        <p class="modal-text">
+            確定要刪除「<span id="deleteItemName"></span>」嗎？<br>
+            此操作無法復原。
+        </p>
+        <div class="modal-actions">
+            <button class="modal-btn modal-btn-cancel" onclick="closeDeleteModal()">取消</button>
+            <a href="#" id="deleteConfirmBtn" class="modal-btn modal-btn-delete">確認刪除</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Delete modal functionality
+    function openDeleteModal(itemId, itemName) {
+        const modal = document.getElementById('deleteModal');
+        document.getElementById('deleteItemName').textContent = itemName;
+        document.getElementById('deleteConfirmBtn').href = '/delete/' + itemId;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDeleteModal() {
+        const modal = document.getElementById('deleteModal');
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // Close modal on overlay click
+    document.getElementById('deleteModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeDeleteModal();
+        }
+    });
+
+    // Close modal on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeDeleteModal();
+        }
+    });
+</script>
 {% endblock %}

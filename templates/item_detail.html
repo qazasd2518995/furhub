@@ -1,41 +1,710 @@
 {% extends "base.html" %}
+{% block title %}{{ item.content }} | FurHub 毛孩樞紐{% endblock %}
+
+{% block extra_css %}
+<style>
+    .detail-page {
+        padding: 2rem 0 4rem;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.85rem;
+        color: var(--color-gray);
+        margin-bottom: 2rem;
+    }
+
+    .breadcrumb a {
+        color: var(--color-gray);
+        text-decoration: none;
+        transition: var(--transition-fast);
+    }
+
+    .breadcrumb a:hover {
+        color: var(--color-gold);
+    }
+
+    .breadcrumb-separator {
+        color: var(--color-gray-light);
+    }
+
+    .breadcrumb-current {
+        color: var(--color-charcoal);
+        font-weight: 500;
+    }
+
+    /* ========================
+       PRODUCT LAYOUT
+    ======================== */
+    .product-layout {
+        display: grid;
+        grid-template-columns: 1fr 500px;
+        gap: 4rem;
+        align-items: start;
+    }
+
+    /* ========================
+       IMAGE SECTION
+    ======================== */
+    .image-section {
+        position: sticky;
+        top: 120px;
+    }
+
+    .main-image-wrapper {
+        position: relative;
+        border-radius: 4px;
+        overflow: hidden;
+        background: var(--color-white);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .main-image {
+        width: 100%;
+        aspect-ratio: 4/5;
+        object-fit: cover;
+        display: block;
+        cursor: zoom-in;
+        transition: transform 0.6s ease;
+    }
+
+    .main-image-wrapper:hover .main-image {
+        transform: scale(1.02);
+    }
+
+    .image-badge {
+        position: absolute;
+        top: 1.5rem;
+        left: 1.5rem;
+        padding: 0.5rem 1rem;
+        background: var(--color-black);
+        color: var(--color-cream);
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+    }
+
+    .image-actions {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .image-action-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: var(--color-white);
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition-smooth);
+        color: var(--color-charcoal);
+    }
+
+    .image-action-btn:hover {
+        background: var(--color-gold);
+        color: var(--color-black);
+        transform: scale(1.1);
+    }
+
+    .image-action-btn.liked {
+        background: var(--color-burgundy);
+        color: var(--color-cream);
+    }
+
+    /* ========================
+       INFO SECTION
+    ======================== */
+    .info-section {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .product-category {
+        font-family: var(--font-accent);
+        font-size: 0.75rem;
+        letter-spacing: 0.2em;
+        color: var(--color-gold);
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .product-category::before {
+        content: '';
+        width: 30px;
+        height: 1px;
+        background: var(--color-gold);
+    }
+
+    .product-title {
+        font-family: var(--font-display);
+        font-size: clamp(1.75rem, 3vw, 2.5rem);
+        font-weight: 500;
+        line-height: 1.2;
+        margin-bottom: 1.5rem;
+        color: var(--color-black);
+    }
+
+    .product-meta {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(26, 26, 26, 0.08);
+        margin-bottom: 1.5rem;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--color-gray);
+    }
+
+    .meta-item i {
+        color: var(--color-gold);
+        font-size: 0.85rem;
+    }
+
+    .product-price-section {
+        margin-bottom: 2rem;
+    }
+
+    .price-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--color-gray);
+        margin-bottom: 0.5rem;
+    }
+
+    .product-price {
+        font-family: var(--font-display);
+        font-size: 3rem;
+        font-weight: 600;
+        color: var(--color-black);
+        line-height: 1;
+    }
+
+    .product-price .currency {
+        font-size: 1.5rem;
+        font-weight: 400;
+        color: var(--color-gray);
+    }
+
+    /* ========================
+       SELLER CARD
+    ======================== */
+    .seller-card {
+        background: var(--color-cream);
+        border-radius: 4px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .seller-avatar {
+        width: 56px;
+        height: 56px;
+        background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-dark) 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-black);
+        font-family: var(--font-accent);
+        font-size: 1.25rem;
+        letter-spacing: 0.05em;
+    }
+
+    .seller-info {
+        flex: 1;
+    }
+
+    .seller-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--color-gray);
+        margin-bottom: 0.25rem;
+    }
+
+    .seller-name {
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        font-weight: 500;
+        color: var(--color-black);
+    }
+
+    .seller-badge {
+        padding: 0.4rem 0.75rem;
+        background: var(--color-forest);
+        color: var(--color-cream);
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        border-radius: 100px;
+    }
+
+    /* ========================
+       ORDER FORM
+    ======================== */
+    .order-form-card {
+        background: var(--color-white);
+        border-radius: 4px;
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+    }
+
+    .order-form-header {
+        background: var(--color-black);
+        color: var(--color-cream);
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .order-form-header i {
+        color: var(--color-gold);
+    }
+
+    .order-form-header span {
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        font-weight: 500;
+    }
+
+    .order-form-body {
+        padding: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+
+    .form-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--color-charcoal);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-label .required {
+        color: var(--color-burgundy);
+        margin-left: 0.25rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 1px solid rgba(26, 26, 26, 0.12);
+        border-radius: 4px;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        background: var(--color-cream);
+        transition: var(--transition-fast);
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--color-gold);
+        box-shadow: 0 0 0 3px rgba(201, 169, 98, 0.15);
+        background: var(--color-white);
+    }
+
+    .form-input::placeholder {
+        color: var(--color-gray-light);
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .order-form-footer {
+        padding: 1.25rem 1.5rem;
+        background: var(--color-cream);
+        border-top: 1px solid rgba(26, 26, 26, 0.06);
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 1.125rem 2rem;
+        background: var(--color-gold);
+        color: var(--color-black);
+        border: none;
+        font-family: var(--font-body);
+        font-size: 0.9rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+
+    .submit-btn:hover {
+        background: var(--color-gold-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-gold);
+    }
+
+    /* ========================
+       TRUST BADGES
+    ======================== */
+    .trust-badges {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .trust-badge {
+        text-align: center;
+        padding: 1rem 0.5rem;
+        background: rgba(201, 169, 98, 0.05);
+        border-radius: 4px;
+    }
+
+    .trust-badge-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--color-cream);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.75rem;
+        color: var(--color-gold);
+    }
+
+    .trust-badge-text {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--color-charcoal);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    /* ========================
+       LIGHTBOX
+    ======================== */
+    .lightbox {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(26, 26, 26, 0.95);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        cursor: zoom-out;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .lightbox.active {
+        display: flex;
+        opacity: 1;
+    }
+
+    .lightbox-image {
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+        border-radius: 4px;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .lightbox-close {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+        width: 50px;
+        height: 50px;
+        border: 1px solid rgba(250, 247, 242, 0.2);
+        border-radius: 50%;
+        background: transparent;
+        color: var(--color-cream);
+        font-size: 1.25rem;
+        cursor: pointer;
+        transition: var(--transition-fast);
+    }
+
+    .lightbox-close:hover {
+        background: var(--color-cream);
+        color: var(--color-black);
+    }
+
+    /* ========================
+       RESPONSIVE
+    ======================== */
+    @media (max-width: 1024px) {
+        .product-layout {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .image-section {
+            position: relative;
+            top: 0;
+        }
+
+        .main-image-wrapper {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .product-meta {
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .trust-badges {
+            grid-template-columns: 1fr;
+        }
+
+        .product-price {
+            font-size: 2.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
+<section class="detail-page">
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+            <a href="/"><i class="fas fa-home"></i></a>
+            <span class="breadcrumb-separator">/</span>
+            <a href="/?category={{ item.category }}">{{ item.category }}</a>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-current">{{ item.content[:30] }}{% if item.content|length > 30 %}...{% endif %}</span>
+        </nav>
 
-<div class="row">
-    <div class="col-md-6">
-        <img src="/uploads/{{ item.image }}" class="img-fluid rounded shadow">
+        <div class="product-layout">
+            <!-- Image Section -->
+            <div class="image-section">
+                <div class="main-image-wrapper" onclick="openLightbox()">
+                    <img src="/uploads/{{ item.image }}" alt="{{ item.content }}" class="main-image">
+                    <span class="image-badge">精選商品</span>
+                    <div class="image-actions" onclick="event.stopPropagation()">
+                        <button class="image-action-btn" id="likeBtn" onclick="toggleLike()" title="加入收藏">
+                            <i class="far fa-heart" id="likeIcon"></i>
+                        </button>
+                        <button class="image-action-btn" onclick="shareProduct()" title="分享商品">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
+                        <button class="image-action-btn" onclick="openLightbox()" title="放大檢視">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Section -->
+            <div class="info-section">
+                <p class="product-category">{{ item.category }}</p>
+                <h1 class="product-title">{{ item.content }}</h1>
+
+                <div class="product-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-store"></i>
+                        {{ item.store }}
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-eye"></i>
+                        {{ range(50, 500)|random }} 次瀏覽
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-clock"></i>
+                        剛剛上架
+                    </div>
+                </div>
+
+                <div class="product-price-section">
+                    <p class="price-label">售價</p>
+                    <p class="product-price">
+                        <span class="currency">NT$</span>{{ item.price }}
+                    </p>
+                </div>
+
+                <!-- Seller Card -->
+                <div class="seller-card">
+                    <div class="seller-avatar">
+                        {{ item.store[0] }}
+                    </div>
+                    <div class="seller-info">
+                        <p class="seller-label">賣家</p>
+                        <p class="seller-name">{{ item.store }}</p>
+                    </div>
+                    <span class="seller-badge">
+                        <i class="fas fa-check"></i> 已認證
+                    </span>
+                </div>
+
+                <!-- Order Form -->
+                <form method="POST" action="/buy/{{ item.id }}" class="order-form-card" id="orderForm">
+                    <div class="order-form-header">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span>購買資訊</span>
+                    </div>
+                    <div class="order-form-body">
+                        <div class="form-group">
+                            <label class="form-label">
+                                收貨地點 <span class="required">*</span>
+                            </label>
+                            <input type="text" name="location" class="form-input" placeholder="請輸入面交地點或寄送地址" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    聯絡電話 <span class="required">*</span>
+                                </label>
+                                <input type="tel" name="phone" class="form-input" placeholder="0912-345-678" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">
+                                    Email <span class="required">*</span>
+                                </label>
+                                <input type="email" name="email" class="form-input" placeholder="example@mail.com" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="order-form-footer">
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-shopping-cart"></i>
+                            立即購買
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Trust Badges -->
+                <div class="trust-badges">
+                    <div class="trust-badge">
+                        <div class="trust-badge-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <p class="trust-badge-text">安全交易</p>
+                    </div>
+                    <div class="trust-badge">
+                        <div class="trust-badge-icon">
+                            <i class="fas fa-undo"></i>
+                        </div>
+                        <p class="trust-badge-text">七天鑑賞</p>
+                    </div>
+                    <div class="trust-badge">
+                        <div class="trust-badge-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <p class="trust-badge-text">客服支援</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="col-md-6">
+</section>
 
-        <h2>{{ item.content }}</h2>
-        <p class="text-muted">分類：{{ item.category }}</p>
-        <p>店家：{{ item.store }}</p>
-        <p class="fw-bold">價格：{{ item.price }}</p>
-
-        <hr>
-
-        <h4>購買資訊</h4>
-        <form method="POST" action="/buy/{{ item.id }}" class="bg-white p-4 rounded shadow">
-
-            <div class="mb-3">
-                <label class="form-label">地點</label>
-                <input name="location" class="form-control" required>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">電話</label>
-                <input name="phone" class="form-control" required>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input name="email" class="form-control" required>
-            </div>
-
-            <button class="btn btn-success w-100">送出訂單</button>
-
-        </form>
-    </div>
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <button class="lightbox-close" onclick="closeLightbox()">
+        <i class="fas fa-times"></i>
+    </button>
+    <img src="/uploads/{{ item.image }}" alt="{{ item.content }}" class="lightbox-image">
 </div>
+{% endblock %}
 
+{% block extra_js %}
+<script>
+    // Lightbox
+    function openLightbox() {
+        document.getElementById('lightbox').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        document.getElementById('lightbox').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeLightbox();
+        }
+    });
+
+    // Like button
+    function toggleLike() {
+        const btn = document.getElementById('likeBtn');
+        const icon = document.getElementById('likeIcon');
+
+        btn.classList.toggle('liked');
+
+        if (btn.classList.contains('liked')) {
+            icon.classList.remove('far');
+            icon.classList.add('fas');
+        } else {
+            icon.classList.remove('fas');
+            icon.classList.add('far');
+        }
+    }
+
+    // Share
+    function shareProduct() {
+        if (navigator.share) {
+            navigator.share({
+                title: '{{ item.content }}',
+                text: '看看這個商品：{{ item.content }} - NT${{ item.price }}',
+                url: window.location.href
+            });
+        } else {
+            // Fallback: copy to clipboard
+            navigator.clipboard.writeText(window.location.href);
+            alert('連結已複製到剪貼簿！');
+        }
+    }
+
+    // Form submission
+    document.getElementById('orderForm').addEventListener('submit', function(e) {
+        const submitBtn = this.querySelector('.submit-btn');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 處理中...';
+        submitBtn.disabled = true;
+    });
+</script>
 {% endblock %}
