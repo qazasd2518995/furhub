@@ -363,16 +363,67 @@ def create_default_admin():
         print('預設管理員帳號已建立：')
         print('  帳號：admin')
         print('  密碼：admin123')
+    return admin
 
 # -------------------------
-# 建立資料表
+# 初始化展示商品資料
 # -------------------------
-if __name__ == "__main__":
+def seed_demo_products():
+    # 如果已有商品就不重複建立
+    if Item.query.count() > 0:
+        return
+
+    admin = User.query.filter_by(username='admin').first()
+    admin_id = admin.id if admin else None
+
+    products = [
+        {"content": "自動伸縮寵物牽繩 5米 - 舒適防滑握把 一鍵鎖定", "store": "FurHub 官方商城", "price": "399", "image": "d11cc63cf52e0c9e.png"},
+        {"content": "智能自動拋球機 - 狗狗互動訓練玩具 3段距離調節", "store": "FurHub 官方商城", "price": "1280", "image": "ec5834f792e018b8.png"},
+        {"content": "Greenies 健綠潔牙骨 原味 Regular 中型犬適用 12入", "store": "FurHub 官方商城", "price": "450", "image": "efaceca171ec65f4.png"},
+        {"content": "Milk-Bone 牛奶骨狗狗餅乾 潔牙零食 酥脆口感", "store": "FurHub 官方商城", "price": "320", "image": "b52be015fa732b09.png"},
+        {"content": "自動清潔寵物除毛梳 - 一鍵清除浮毛 不傷皮膚 適用各種毛髮", "store": "FurHub 官方商城", "price": "289", "image": "pet_brush_01.jpg"},
+        {"content": "保暖羊羔絨寵物毛衣 - 附D環牽繩孔 三色可選 (灰/藍/棕)", "store": "FurHub 官方商城", "price": "459", "image": "pet_sweater_01.jpg"},
+        {"content": "竹木架高寵物碗架組 - 雙碗設計 護頸斜面 貓狗適用", "store": "FurHub 官方商城", "price": "680", "image": "pet_bowl_stand_01.jpg"},
+        {"content": "半封閉式貓砂盆 - 時尚白灰雙色 防濺設計 大空間好清理", "store": "FurHub 官方商城", "price": "890", "image": "cat_litter_box_01.jpg"},
+        {"content": "PETSTRO 三輪寵物推車 - 透氣網窗 可折疊收納 承重25kg", "store": "FurHub 官方商城", "price": "2480", "image": "pet_stroller_01.jpg"},
+        {"content": "舒適絨毛寵物窩床 - 骨頭圖案 可拆洗 中大型犬適用", "store": "FurHub 官方商城", "price": "750", "image": "pet_bed_01.jpg"},
+        {"content": "寵物專用紙尿褲 - 超強吸收 防側漏 生理期/外出必備 M號12入", "store": "FurHub 官方商城", "price": "320", "image": "pet_diaper_01.jpg"},
+        {"content": "Portland Pet Food 手工狗零食組合 - 薑餅人/培根/南瓜餅乾 天然無穀", "store": "FurHub 官方商城", "price": "580", "image": "dog_treats_combo_01.jpg"},
+        {"content": "Cesar 西莎狗罐頭 - 牛肉起司時蔬凍 100g 單入", "store": "FurHub 官方商城", "price": "45", "image": "cesar_dog_food_01.jpg"},
+        {"content": "專業寵物指甲剪 - 不鏽鋼刀頭 安全鎖扣 貓狗通用", "store": "FurHub 官方商城", "price": "199", "image": "pet_nail_clipper_01.jpg"},
+        {"content": "有機雞肉牛皮捲零食 - 天然無添加 潔牙磨牙 300g大包裝", "store": "FurHub 官方商城", "price": "420", "image": "rawhide_sticks_01.jpg"},
+    ]
+
+    for p in products:
+        item = Item(
+            content=p["content"],
+            store=p["store"],
+            price=p["price"],
+            category=DEFAULT_CATEGORY,
+            image=p["image"],
+            user_id=admin_id
+        )
+        db.session.add(item)
+
+    db.session.commit()
+    print(f'已載入 {len(products)} 個展示商品')
+
+# -------------------------
+# 初始化資料庫 (Vercel 需要在 import 時執行)
+# -------------------------
+def init_db():
     if not os.path.exists(Config.UPLOAD_FOLDER):
         os.makedirs(Config.UPLOAD_FOLDER)
+    db.create_all()
+    create_default_admin()
+    seed_demo_products()
 
-    with app.app_context():
-        db.create_all()
-        create_default_admin()
+# Vercel serverless 環境初始化
+with app.app_context():
+    init_db()
 
+# -------------------------
+# 本地開發伺服器
+# -------------------------
+if __name__ == "__main__":
     app.run(debug=True)
