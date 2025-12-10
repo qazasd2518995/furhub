@@ -369,9 +369,13 @@ def create_default_admin():
 # 初始化展示商品資料
 # -------------------------
 def seed_demo_products():
-    # 如果已有商品就不重複建立
-    if Item.query.count() > 0:
+    # 確保有 15 個展示商品
+    if Item.query.count() >= 15:
         return
+
+    # 清空現有商品重新建立
+    Item.query.delete()
+    db.session.commit()
 
     admin = User.query.filter_by(username='admin').first()
     admin_id = admin.id if admin else None
